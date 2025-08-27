@@ -1,4 +1,4 @@
-name: Build, Scan, and Push Docker Image to ACR
+name: Build, Scan, and Push Docker Image to acr
 
 on:
   push:
