@@ -1,7 +1,11 @@
-name: Build, Scan, and (optionally) Push Docker Image to ACR
+name: Build, Scan, and Push Docker Image to ACR
 
 on:
-  workflow_dispatch: {}   # manual trigger only (safe to commit)
+  push:
+    branches: [ main ]              
+    paths:
+      - 'app/**'                    
+      - 'Dockerfile'
 
 permissions:
   id-token: write
@@ -11,47 +15,52 @@ env:
   DOCKER_IMAGE_NAME: ai-dc-monitor
 
 jobs:
-  build_scan_push:
+  build_and_push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Login to ACR via Docker (requires secrets we'll add next)
-      - name: Log in to Azure Container Registry
-        if: ${{ secrets.ACR_SERVER != '' && secrets.ARM_CLIENT_ID != '' && secrets.ARM_CLIENT_SECRET != '' }}
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
+              "tenantId": "${{ secrets.ARM_TENANT_ID }}",
+              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}"
+            }
+
+      - name: ACR login
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_SERVER }}      # e.g. tmacrkb12345.azurecr.io
+          registry: ${{ secrets.ACR_SERVER }}
           username: ${{ secrets.ARM_CLIENT_ID }}
           password: ${{ secrets.ARM_CLIENT_SECRET }}
 
-      # Build once and load locally for Trivy scan
-      - name: Build Docker image (load for scan)
+      - name: Build image (for scan)
         uses: docker/build-push-action@v5
         with:
-          context: ./app                # <-- if your Dockerfile lives in app/
-          file: ./app/Dockerfile
+          context: .
+          file: ./Dockerfile
+          tags: ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
           load: true
-          tags: ${{ secrets.ACR_SERVER || 'local' }}/${{ env.DOCKER_IMAGE_NAME }}:scan
 
-      - name: Trivy scan (image)
-        uses: aquasecurity/trivy-action@0.24.0
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ secrets.ACR_SERVER || 'local' }}/${{ env.DOCKER_IMAGE_NAME }}:scan
-          format: 'table'
-          exit-code: '0'                 # don't fail yet; we’ll tighten later
+          image-ref: ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
+          format: table
+          exit-code: '0'
           severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
 
-      # Build & push only if ACR secrets are present (safe while you set things up)
-      - name: Build & Push to ACR
-        if: ${{ secrets.ACR_SERVER != '' && secrets.ARM_CLIENT_ID != '' && secrets.ARM_CLIENT_SECRET != '' }}
+      - name: Build & Push
         uses: docker/build-push-action@v5
         with:
-          context: ./app
-          file: ./app/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
