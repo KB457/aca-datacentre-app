@@ -1,0 +1,58 @@
+name: Build, Scan, and (optionally) Push Docker Image to ACR
+
+on:
+  workflow_dispatch: {}   # manual trigger only (safe to commit)
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DOCKER_IMAGE_NAME: ai-dc-monitor
+
+jobs:
+  build_scan_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Login to ACR via Docker (requires secrets we'll add next)
+      - name: Log in to Azure Container Registry
+        if: ${{ secrets.ACR_SERVER != '' && secrets.ARM_CLIENT_ID != '' && secrets.ARM_CLIENT_SECRET != '' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_SERVER }}      # e.g. tmacrkb12345.azurecr.io
+          username: ${{ secrets.ARM_CLIENT_ID }}
+          password: ${{ secrets.ARM_CLIENT_SECRET }}
+
+      # Build once and load locally for Trivy scan
+      - name: Build Docker image (load for scan)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app                # <-- if your Dockerfile lives in app/
+          file: ./app/Dockerfile
+          load: true
+          tags: ${{ secrets.ACR_SERVER || 'local' }}/${{ env.DOCKER_IMAGE_NAME }}:scan
+
+      - name: Trivy scan (image)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: ${{ secrets.ACR_SERVER || 'local' }}/${{ env.DOCKER_IMAGE_NAME }}:scan
+          format: 'table'
+          exit-code: '0'                 # don't fail yet; we’ll tighten later
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+
+      # Build & push only if ACR secrets are present (safe while you set things up)
+      - name: Build & Push to ACR
+        if: ${{ secrets.ACR_SERVER != '' && secrets.ARM_CLIENT_ID != '' && secrets.ARM_CLIENT_SECRET != '' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
+            ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:latest
