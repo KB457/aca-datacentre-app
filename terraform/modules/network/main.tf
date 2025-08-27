@@ -11,3 +11,5 @@ resource "azurerm_subnet" "container_subnet" {
     virtual_network_name = azurerm_virtual_network.vnet.name
     address_prefixes = var.address_prefixes
 }
+
+#test
