@@ -1,8 +1,8 @@
-name: Terraform Plan & Lint
+name: Terraform Plan & LinT
 
 on:
   push:
-    branches: [ main ]              # 
+    branches: [ main ]              ##
     paths:
       - 'terraform/**'
 
