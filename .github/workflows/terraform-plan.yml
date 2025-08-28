@@ -38,10 +38,10 @@ jobs:
           terraform_version: 1.7.0
 
       - name: Terraform Init
-        run: terraform init -reconfigure -input=false -no-color   # 
+        run: terraform init -reconfigure
 
       - name: Terraform Validate
-        run: terraform validate -no-color                         # 
+        run: terraform validate
 
       - name: Install and Run TFLint
         run: |
@@ -52,4 +52,4 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color                #  changed here
+        run: terraform plan
