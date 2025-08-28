@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# --- Run stage ----
+# --- Run stage -----
 FROM nginx:alpine
 # Use Nginx default config (no SPA fallback, but index will load)
 COPY --from=build /app/dist /usr/share/nginx/html

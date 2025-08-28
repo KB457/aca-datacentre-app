@@ -1,8 +1,8 @@
-name: Terraform Plan & LinT
+name: Terraform Plan & Lint
 
 on:
   push:
-    branches: [ main ]              ##
+    branches: [ main ]
     paths:
       - 'terraform/**'
 
@@ -30,13 +30,7 @@ jobs:
       - name: Azure login
         uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

@@ -12,4 +12,4 @@ resource "azurerm_subnet" "container_subnet" {
     address_prefixes = var.address_prefixes
 }
 
-#test
+#tes
