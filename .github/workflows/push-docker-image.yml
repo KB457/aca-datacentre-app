@@ -12,7 +12,9 @@ permissions:
   contents: read
 
 env:
+ 
   DOCKER_IMAGE_NAME: ai-dc-monitor
+  ACR_SERVER: ${{ secrets.ACR_SERVER }}
 
 jobs:
   build_and_push:
@@ -22,34 +24,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      
       - name: Azure login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: ACR login
-        uses: docker/login-action@v3
+      
+      - name: ACR login (OIDC)
+        uses: azure/docker-login@v2
         with:
-          registry: ${{ secrets.ACR_SERVER }}
-          username: ${{ secrets.ARM_CLIENT_ID }}
-          password: ${{ secrets.ARM_CLIENT_SECRET }}
+          login-server: ${{ env.ACR_SERVER }}
 
+      # Build a local image for security scan
       - name: Build image (for scan)
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
-          tags: ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
+          tags: ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
           load: true
 
       - name: Trivy scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
+          image-ref: ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
           format: table
-          exit-code: '0'
+          exit-code: '0'                # don't fail the build on findings
           severity: 'CRITICAL,HIGH'
 
+      
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
@@ -57,5 +61,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
-            ${{ secrets.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+            ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
+            ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:latest
+
