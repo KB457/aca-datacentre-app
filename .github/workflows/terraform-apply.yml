@@ -1,18 +1,24 @@
 name: Terraform Apply
 
 on:
-  workflow_dispatch:    # manual trigger
+  workflow_dispatch:    
 
 permissions:
   contents: read
   id-token: write
+
+env:
+  ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   apply:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform   # run commands inside terraform folder
+        working-directory: terraform
 
     steps:
       - name: Checkout
@@ -31,5 +37,11 @@ jobs:
       - name: Terraform Init
         run: terraform init -reconfigure
 
+      # create temp.tfvars.json from GitHub secrets
+      - name: Write tfvars file
+        run: |
+          echo '${{ secrets.TFVARS_JSON }}' > temp.tfvars.json
+
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var-file=temp.tfvars.json
+

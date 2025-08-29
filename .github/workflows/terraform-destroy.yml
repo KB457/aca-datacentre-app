@@ -1,7 +1,7 @@
-name: Terraform Destroy Infra
+name: Terraform Destroy
 
 on:
-  workflow_dispatch:        
+  workflow_dispatch:    
 
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform   
+        working-directory: terraform
 
     steps:
       - name: Checkout
@@ -27,13 +27,7 @@ jobs:
       - name: Azure login
         uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -43,5 +37,10 @@ jobs:
       - name: Terraform Init
         run: terraform init -reconfigure
 
+      # 👇 Create temp.tfvars.json from GitHub secrets
+      - name: Write tfvars file
+        run: |
+          echo '${{ secrets.TFVARS_JSON }}' > temp.tfvars.json
+
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -input=false -var-file=temp.tfvars.json
