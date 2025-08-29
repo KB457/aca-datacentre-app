@@ -121,10 +121,10 @@ variable "route_name" {
   type        = string
 }
 
-variable "origin_host_name" {
-  description = "FQDN of the Container App (backend origin)"
-  type        = string
-}
+#variable "origin_host_name" {
+#  description = "FQDN of the Container App (backend origin)"
+#  type        = string
+#}
 
 variable "origin_host_header" {
   description = "Host header sent to the origin (defaults to origin_host_name)"
