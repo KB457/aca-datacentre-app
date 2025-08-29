@@ -13,7 +13,7 @@ permissions:
 
 env:
   DOCKER_IMAGE_NAME: ai-dc-monitor
-  ACR_SERVER: tmacrkb12345.azurecr.io   # your ACR login server
+  ACR_SERVER: ${{ secrets.ACR_SERVER }}   
 
 jobs:
   build_and_push:
