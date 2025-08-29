@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'app/**'
-      - 'Dockerfile'
+      - 'app/Dockerfile'
 
 permissions:
   id-token: write
@@ -13,7 +13,7 @@ permissions:
 
 env:
   DOCKER_IMAGE_NAME: ai-dc-monitor
-  ACR_SERVER: ${{ secrets.ACR_SERVER }}   
+  ACR_SERVER: ${{ secrets.ACR_SERVER }}
 
 jobs:
   build_and_push:
@@ -39,8 +39,8 @@ jobs:
       - name: Build image (for scan)
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./app
+          file: ./app/Dockerfile
           tags: ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
           load: true
 
@@ -49,14 +49,14 @@ jobs:
         with:
           image-ref: ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:scan
           format: table
-          exit-code: '0'                # don’t fail on findings
+          exit-code: '0'
           severity: 'CRITICAL,HIGH'
 
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./app
+          file: ./app/Dockerfile
           push: true
           tags: |
             ${{ env.ACR_SERVER }}/${{ env.DOCKER_IMAGE_NAME }}:${{ github.run_number }}
