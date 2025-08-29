@@ -1,24 +1,18 @@
 name: Terraform Apply
 
 on:
-  workflow_dispatch:    
+  workflow_dispatch:    # manual trigger
 
 permissions:
   contents: read
   id-token: write
-
-env:
-  ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
-  ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   apply:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraform
+        working-directory: terraform   # run commands inside terraform folder
 
     steps:
       - name: Checkout
@@ -27,13 +21,7 @@ jobs:
       - name: Azure login
         uses: azure/login@v1
         with:
-          creds: |
-            {
-              "clientId": "${{ secrets.ARM_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.ARM_CLIENT_SECRET }}",
-              "tenantId": "${{ secrets.ARM_TENANT_ID }}",
-              "subscriptionId": "${{ secrets.ARM_SUBSCRIPTION_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -44,4 +32,4 @@ jobs:
         run: terraform init -reconfigure
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -input=false -var-file=temp.tfvars.json
