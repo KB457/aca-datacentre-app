@@ -7,6 +7,8 @@ permissions:
   contents: read
   id-token: write
 
+# ✅ Environment variables for Terraform AzureRM provider + backend auth
+# These allow Terraform to authenticate against Azure AND the backend storage account
 env:
   ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
@@ -21,27 +23,40 @@ jobs:
         working-directory: terraform
 
     steps:
+      # Step 1: Checkout repo
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Azure login (needed for both backend + provider)
       - name: Azure login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Step 3: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
 
+      # Step 4: Init Terraform with backend
+      # ✅ Added explicit env block so init uses ARM_* secrets for backend authentication
       - name: Terraform Init
         run: terraform init -reconfigure
+        env:
+          ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
 
-      # create temp.tfvars.json from GitHub secrets
+      # Step 5: Write variables file from GitHub secret
+      # ✅ No changes here; still use TFVARS_JSON for normal infra variables (not backend)
       - name: Write tfvars file
         run: |
           echo '${{ secrets.TFVARS_JSON }}' > temp.tfvars.json
 
+      # Step 6: Terraform Apply
+      # ✅ No changes except clarified comment
+      # Backend config comes from backend.tf, infra vars from temp.tfvars.json
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false -var-file=temp.tfvars.json
-
