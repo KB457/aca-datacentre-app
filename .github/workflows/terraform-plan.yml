@@ -15,7 +15,6 @@ env:
   ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
-  ACR_NAME:            ${{ secrets.ACR_NAME }}
 
 jobs:
   plan:
@@ -53,4 +52,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Plan
-        run: terraform plan -var="acr_name=${{ env.ACR_NAME }}"
+        run: |
+          echo '${{ secrets.TFVARS_JSON }}' > temp.tfvars.json
+          terraform plan -input=false -no-color -var-file=temp.tfvars.json
+
