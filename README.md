@@ -81,6 +81,7 @@ The following diagram shows how the solution is structured:
 ├── .gitignore
 └── README.md
 
+
 ## 🚀 Deployment Workflow  
 
 The deployment of the **AI Data Centre Monitor** is fully automated with **GitHub Actions** and **Terraform**, running through these stages:  
