@@ -53,35 +53,34 @@ The following diagram shows how the solution is structured:
 
 ## 📂 Project Structure  
 
-
-
 ├── .github
-│   └── workflows
-│       ├── push-docker-image.yml   # CI: Build & push Docker image to ACR
-│       ├── terraform-plan.yml      # CI: Terraform plan (preview infra changes)
-│       ├── terraform-apply.yml     # CD: Terraform apply (deploy infra)
-│       └── terraform-destroy.yml   # CD: Terraform destroy (teardown infra)
+│ └── workflows
+│ ├── push-docker-image.yml # CI: Build & push Docker image to ACR
+│ ├── terraform-plan.yml # CI: Terraform plan (preview infra changes)
+│ ├── terraform-apply.yml # CD: Terraform apply (deploy infra)
+│ └── terraform-destroy.yml # CD: Terraform destroy (teardown infra)
 │
-├── app                             # AI Data Centre Monitor app (frontend/backend)
+├── app # AI Data Centre Monitor app (frontend/backend)
 │
 ├── terraform
-│   ├── modules                     # Reusable Terraform modules
-│   │   ├── az_container_app        # Container App module
-│   │   ├── az_container_registry   # ACR module
-│   │   ├── frontdoor               # Azure Front Door module
-│   │   ├── identity                # Managed Identity module
-│   │   ├── network                 # Networking (VNet/Subnet) module
-│   │   └── role_assignments        # RBAC role assignments
-│   │
-│   ├── backend.tf                  # Remote backend config (Azure Storage for tfstate)
-│   ├── main.tf                     # Root Terraform file
-│   ├── output.tf                   # Global outputs
-│   ├── terraform.tfvars            # Variable values
-│   └── variables.tf                # Input variables
+│ ├── modules # Reusable Terraform modules
+│ │ ├── az_container_app # Container App module
+│ │ ├── az_container_registry # ACR module
+│ │ ├── frontdoor # Azure Front Door module
+│ │ ├── identity # Managed Identity module
+│ │ ├── network # Networking (VNet/Subnet) module
+│ │ └── role_assignments # RBAC role assignments
+│ │
+│ ├── backend.tf # Remote backend config (Azure Storage for tfstate)
+│ ├── main.tf # Root Terraform file
+│ ├── output.tf # Global outputs
+│ ├── terraform.tfvars # Variable values
+│ └── variables.tf # Input variables
 │
 ├── .dockerignore
 ├── .gitignore
 └── README.md
+
 
 
 
