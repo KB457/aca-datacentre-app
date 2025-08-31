@@ -26,12 +26,14 @@ This project was built to demonstrate a complete DevOps workflow, from local cod
 
 The following diagram shows how the solution is structured:
 
+![Architecture Diagram](images/Architecture-diagram.JPG)
 
 
 
 
 🎥AI Data Center Monitor App Demo
 
+![Datacentre App Demo](images/datacentreapp.gif)
 
 
 
@@ -131,34 +133,34 @@ By centralising sensitive values in GitHub Secrets, the workflows remain secure,
 ## ⚙️ GitHub Actions (CI/CD)
 
 ### 🔁 Push Docker Image  
-_Pipeline output screenshots here_
+
+![Push Docker Image Workflow](images/pushdockerimageworkflow.JPG)
 
 ### 🔁 Terraform Plan  
-_Pipeline output screenshots here_
+
+![Terraform Plan Workflow](images/terraformplanworkflow.JPG)
 
 ### 🔁 Terraform Apply  
-_Pipeline output screenshots here_
+
+![Terraform Apply Workflow](images/terraformapply.JPG)
 
 ### 🔁 Terraform Destroy  
-_Pipeline output screenshots here_
+
+![Terraform Destroy Workflow](images/terraformdestroy.JPG)
 
 
 ## 🔵 Azure Container App & Front Door
 
+
 ### ▶️ Azure Container Apps Overview  
-_Screenshot of ACA overview here_
 
-### ▶️ Application UI  
-_Screenshot of the running app here_
+![ACA Overview](images/aca.JPG)
 
-### ▶️ Web App Link  
-_Link or screenshot of browser view here_
 
-### ▶️ Azure Front Door Route & DNS Configuration  
-_Screenshots of Front Door route/DNS setup here_
+![ACA Portal](images/frontdoorurl.JPG)
 
-### ▶️ Front Door Endpoint Overview  
-_Screenshot of endpoint overview here_
 
-### ▶️ Custom Domain Configuration  
-_Screenshot of domain mapping and validation here_
+
+
+
+_
