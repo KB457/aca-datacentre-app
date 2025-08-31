@@ -61,7 +61,7 @@ The following diagram shows how the solution is structured:
 │       ├── terraform-apply.yml   # CD: Terraform apply (deploy infra)
 │       └── terraform-destroy.yml # CD: Terraform destroy (teardown infra)
 │
-├── app # AI Data Centre Monitor app (frontend/backend)
+├── app # AI Data Center Monitor app
 │
 ├── terraform
 │   ├── modules # Reusable Terraform modules
