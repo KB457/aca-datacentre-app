@@ -51,7 +51,9 @@ The following diagram shows how the solution is structured:
 | **TFLint**                         | Validates Terraform for syntax and standards                       |
 
 
-## 📂 Project Structure
+## 📂 Project Structure  
+
+
 
 ├── .github
 │   └── workflows
@@ -80,6 +82,7 @@ The following diagram shows how the solution is structured:
 ├── .dockerignore
 ├── .gitignore
 └── README.md
+
 
 
 ## 🚀 Deployment Workflow  
