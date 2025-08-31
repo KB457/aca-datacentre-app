@@ -28,3 +28,9 @@ variable "origin_name" {
 variable "route_name" {
   
 }
+variable "custom_domain_name" {
+  
+}
+variable "custom_name" {
+  
+}

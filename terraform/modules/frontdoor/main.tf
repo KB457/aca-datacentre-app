@@ -1,18 +1,29 @@
-# Create a Front Door profile (Standard or Premium tier)
+
 resource "azurerm_cdn_frontdoor_profile" "fd" {
   name                = var.profile_name
   resource_group_name = var.resource_group_name
-  sku_name            = "Standard_AzureFrontDoor" # or Premium if you need WAF etc.
+  sku_name            = "Standard_AzureFrontDoor" 
 }
 
-# Front Door endpoint (the *.azurefd.net public URL you’ll get)
+# Front Door endpoint (the *.azurefd.net public)
 resource "azurerm_cdn_frontdoor_endpoint" "fd" {
   name = var.endpoint_name
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.fd.id
 }
 
+resource "azurerm_cdn_frontdoor_custom_domain" "custom_domain" {
+  name                     = var.custom_name
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.fd.id
+  host_name                = var.custom_domain_name
 
-# Group of origins (you could have multiple Container Apps or backends later)
+  tls {
+    certificate_type   = "ManagedCertificate"
+    minimum_tls_version = "TLS12"
+  }
+}
+
+
+# Group of origins
 resource "azurerm_cdn_frontdoor_origin_group" "og" {
   name = var.origin_group_name
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.fd.id
@@ -28,7 +39,7 @@ resource "azurerm_cdn_frontdoor_origin_group" "og" {
 }
 
 
-# A single origin = your Container App public FQDN
+
 
 resource "azurerm_cdn_frontdoor_origin" "origin" {
   name = var.origin_name
@@ -47,7 +58,7 @@ resource "azurerm_cdn_frontdoor_origin" "origin" {
 
 
 
-# Route = tells Front Door how to handle traffic
+
 resource "azurerm_cdn_frontdoor_route" "route" {
   name                          = var.route_name
   cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.fd.id

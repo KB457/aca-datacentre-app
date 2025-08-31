@@ -121,6 +121,18 @@ variable "route_name" {
   type        = string
 }
 
+variable "custom_domain_name" {
+  description = "Custom domain name for the app"
+  type        = string
+}
+
+variable "custom_name" {
+  description = "The Azure resource-friendly name for the custom domain"
+  type = string
+  
+}
+
+
 #variable "origin_host_name" {
 #  description = "FQDN of the Container App (backend origin)"
 #  type        = string

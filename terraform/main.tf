@@ -57,6 +57,8 @@ module "frontdoor" {
   endpoint_name = var.endpoint_name
   profile_name = var.profile_name
   origin_name = var.origin_name
+  custom_domain_name = var.custom_domain_name
+  custom_name = var.custom_name
   
   origin_host_name = module.az_container_app.app_fqdn
 
