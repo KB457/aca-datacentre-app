@@ -160,8 +160,17 @@ By centralising sensitive values in GitHub Secrets, the workflows remain secure,
 
 ![ACA Portal](images/frontdoorurl.JPG)
 
+▶️ Azure Front Door Routing & Custom Domain Setup
+
+![ACA Portal](images/customdomain.JPG)
+
+![ACA Portal](images/customdomainurl.JPG)
 
 
+🌍 Live Demo
 
+👉 https://www.kbakar.co.uk
+
+(Custom domain routed via Azure Front Door + Cloudflare)
 
 _
